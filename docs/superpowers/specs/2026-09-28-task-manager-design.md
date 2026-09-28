@@ -49,7 +49,7 @@ src/
     api/                       API client and generic async-query composable
 ```
 
-`pages` compose public APIs from lower layers and contain no data-fetching, mutation or validation logic. `layouts/default` provides the application shell and a persistent header. The header contains the app identity and the Create task feature, so task creation is available from both the board and task details, similarly to Jira. `entities/task` owns the application task state. Features own user intents and their validation. Widgets compose the visible page blocks.
+`pages` compose public APIs from lower layers and contain no data-fetching, mutation or validation logic. Every route is rendered inside `layouts/default`, which provides the application shell and a persistent header shared by all pages. The header contains the app identity and the Create task feature, so task creation is available from both the board and task details, similarly to Jira. `entities/task` owns the application task state. Features own user intents and their validation. Widgets compose the visible page blocks.
 
 ## Domain model and DTO boundary
 
