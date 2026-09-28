@@ -1,0 +1,1 @@
+export { initializeRouter } from './router';
