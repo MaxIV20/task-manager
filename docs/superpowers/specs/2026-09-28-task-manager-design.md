@@ -31,7 +31,9 @@ src/
     task-details/              route-level composition for /tasks/:id
   widgets/
     kanban-board/              task toolbar, loading/empty/error states and status columns
-    task-details/              read-only detail layout and comments area
+    task-content/              task title, description and primary task actions
+    task-comments/             comments list, sort control and comment feature composition
+    task-info-sidebar/         status, priority, assignee and creation timestamp
   features/
     create-task/               creation dialog and validation
     edit-task/                 editing dialog and validation
@@ -114,7 +116,7 @@ The tasks page shows a Jira-inspired dense toolbar with a title, Create task but
 
 The Create task dialog includes title, description, assignee and priority. Status is omitted and defaults to `todo`. On successful creation the app navigates to `/tasks/:id`; Cancel closes the dialog without changing the route.
 
-The detail page initially renders read-only fields plus Back, Edit, Clone and Delete actions. Edit opens a dialog with the editable task fields. Saving updates state and closes it. Clone creates a full copy, including comments, with a new task id. Delete requires a user confirmation before removal. The comments area supports create, edit and confirmed delete, plus ascending/descending timestamp sort.
+The detail page composes three widgets: `task-content` for the title, description and primary task actions; `task-comments` for the comments list and its sort control; and `task-info-sidebar` for status, priority, assignee and creation timestamp. The page initially renders read-only fields plus Back, Edit, Clone and Delete actions. Edit opens a dialog with the editable task fields. Saving updates state and closes it. Clone creates a full copy, including comments, with a new task id. Delete requires a user confirmation before removal. The comments area supports create, edit and confirmed delete, plus ascending/descending timestamp sort.
 
 ## Validation, loading and errors
 
