@@ -32,6 +32,7 @@ src/
     task-list/                 route-level composition for /tasks
     task-details/              route-level composition for /tasks/:id
   widgets/
+    task-filters/              filter panel displayed above the Kanban board
     kanban-board/              task toolbar, loading/empty/error states and status columns
     task-content/              task title, description and primary task actions
     task-comments/             comments list, sort control and comment feature composition
@@ -39,7 +40,7 @@ src/
   features/
     create-task/               creation dialog and validation
     edit-task/                 editing dialog and validation
-    task-filters/              draft/applied filters and filter form
+    apply-task-filters/        draft/applied filters, validation and apply/reset actions
     task-actions/              clone and delete actions
     manage-comments/           comment create, edit and delete actions
   entities/
@@ -114,7 +115,7 @@ The router uses `createWebHashHistory`.
 - `/tasks` shows the board.
 - `/tasks/:id` shows details. Once its request completes with no task, it redirects to `/tasks`.
 
-The default layout displays a persistent Jira-inspired header with the app identity and a Create task button. The tasks page shows a dense toolbar with its title and filter controls. The board contains Todo, In progress and Done columns. Cards show title, readable status, readable priority, assignee and formatted creation date. Selecting a card opens its detail route.
+The default layout displays a persistent Jira-inspired header with the app identity and a Create task button. The tasks page composes a `task-filters` widget above the `kanban-board` widget. The filter widget shows the page title and a dense filter panel; the board contains Todo, In progress and Done columns. Cards show title, readable status, readable priority, assignee and formatted creation date. Selecting a card opens its detail route.
 
 The Create task dialog includes title, description, assignee and priority. Status is omitted and defaults to `todo`. On successful creation the app navigates to `/tasks/:id`; Cancel closes the dialog without changing the route.
 
