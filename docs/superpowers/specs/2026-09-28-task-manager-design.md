@@ -26,6 +26,8 @@ The project follows FSD and only imports another slice through its root public A
 ```text
 src/
   app/                         application bootstrap, Pinia, Element Plus and hash router
+  layouts/
+    default/                   application shell and persistent header
   pages/
     task-list/                 route-level composition for /tasks
     task-details/              route-level composition for /tasks/:id
@@ -47,7 +49,7 @@ src/
     api/                       API client and generic async-query composable
 ```
 
-`pages` compose public APIs from lower layers and contain no data-fetching, mutation or validation logic. `entities/task` owns the application task state. Features own user intents and their validation. Widgets compose the visible page blocks.
+`pages` compose public APIs from lower layers and contain no data-fetching, mutation or validation logic. `layouts/default` provides the application shell and a persistent header. The header contains the app identity and the Create task feature, so task creation is available from both the board and task details, similarly to Jira. `entities/task` owns the application task state. Features own user intents and their validation. Widgets compose the visible page blocks.
 
 ## Domain model and DTO boundary
 
@@ -112,7 +114,7 @@ The router uses `createWebHashHistory`.
 - `/tasks` shows the board.
 - `/tasks/:id` shows details. Once its request completes with no task, it redirects to `/tasks`.
 
-The tasks page shows a Jira-inspired dense toolbar with a title, Create task button and filter controls. The board contains Todo, In progress and Done columns. Cards show title, readable status, readable priority, assignee and formatted creation date. Selecting a card opens its detail route.
+The default layout displays a persistent Jira-inspired header with the app identity and a Create task button. The tasks page shows a dense toolbar with its title and filter controls. The board contains Todo, In progress and Done columns. Cards show title, readable status, readable priority, assignee and formatted creation date. Selecting a card opens its detail route.
 
 The Create task dialog includes title, description, assignee and priority. Status is omitted and defaults to `todo`. On successful creation the app navigates to `/tasks/:id`; Cancel closes the dialog without changing the route.
 
@@ -132,7 +134,7 @@ While a list or detail request is in progress, the corresponding widget displays
 
 ## Responsive presentation
 
-On desktop, the board uses three visible columns and a compact Jira-inspired visual hierarchy. On mobile, controls stack or become full-width while Kanban columns retain their meaning through horizontal scrolling. Cards, forms, dialog actions and detail content remain readable at the existing media breakpoints.
+On desktop, the board uses three visible columns and a compact Jira-inspired visual hierarchy. On mobile, the header keeps the Create task action accessible, while controls stack or become full-width and Kanban columns retain their meaning through horizontal scrolling. Cards, forms, dialog actions and detail content remain readable at the existing media breakpoints.
 
 ## Verification
 
