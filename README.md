@@ -1,23 +1,10 @@
-# Vue 3 Starter
-
-Базовый проект для Vue 3-приложений на TypeScript с Vue Router, Pinia, TanStack Vue Query и архитектурой FSD.
-
-Подробные правила разработки находятся в [руководстве по стилю](style-guide.md).
-
 ## Установка и запуск
 
-Нужна актуальная LTS-версия Node.js и npm.
+Нужна актуальная Node.js и npm.
 
 ```bash
 npm install
 npm run dev
-```
-
-После запуска Vite выведет адрес локального сервера. Для production-сборки и её просмотра используйте:
-
-```bash
-npm run build
-npm run preview
 ```
 
 ## Команды

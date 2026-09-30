@@ -1,5 +1,6 @@
 import type { ApiEndpoint, EndpointBody, EndpointResponse } from './schema';
 import {
+  isAbortError,
   isApiError,
   type ApiError,
   type HttpMethod,
@@ -14,26 +15,28 @@ type EndpointFor<Method extends HttpMethod> = ApiEndpoint<
   unknown
 >;
 
-export const getApiBaseUrl = (): string => {
+export function getApiBaseUrl(): string {
   return (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
-};
+}
 
-export const normalizeError = (status: number): ApiError => ({
-  status,
-  message: 'Request failed',
-});
+export function normalizeError(status: number): ApiError {
+  return {
+    status,
+    message: 'Request failed',
+  };
+}
 
-const appendQueryValue = (
+function appendQueryValue(
   params: URLSearchParams,
   key: string,
   value: QueryParamValue,
-) => {
+) {
   if (value !== undefined) {
     params.append(key, String(value));
   }
-};
+}
 
-const buildUrl = (path: string, query: RequestOptions['query']): string => {
+function buildUrl(path: string, query: RequestOptions['query']): string {
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(query ?? {})) {
@@ -46,9 +49,9 @@ const buildUrl = (path: string, query: RequestOptions['query']): string => {
 
   const search = params.toString();
   return `${getApiBaseUrl()}${path.startsWith('/') ? path : `/${path}`}${search ? `?${search}` : ''}`;
-};
+}
 
-const parseResponseBody = async (response: Response): Promise<unknown> => {
+async function parseResponseBody(response: Response): Promise<unknown> {
   const text = await response.text();
 
   if (!text) {
@@ -60,16 +63,16 @@ const parseResponseBody = async (response: Response): Promise<unknown> => {
   } catch {
     return undefined;
   }
-};
+}
 
-const request = async <
+async function request<
   Endpoint extends EndpointFor<Method>,
   Method extends HttpMethod,
 >(
   method: Method,
   path: Endpoint['path'],
   options: RequestOptions<EndpointBody<Endpoint>> = {},
-): Promise<EndpointResponse<Endpoint>> => {
+): Promise<EndpointResponse<Endpoint>> {
   const headers = new Headers(options.headers);
   const hasBody = options.body !== undefined;
 
@@ -90,37 +93,47 @@ const request = async <
 
     return (await parseResponseBody(response)) as EndpointResponse<Endpoint>;
   } catch (error) {
-    if (isApiError(error)) {
+    if (isApiError(error) || isAbortError(error)) {
       throw error;
     }
 
     throw normalizeError(0);
   }
-};
+}
 
 export const api = {
-  get: <Endpoint extends EndpointFor<'GET'>>(
+  get<Endpoint extends EndpointFor<'GET'>>(
     path: Endpoint['path'],
     options?: RequestOptions<EndpointBody<Endpoint>>,
-  ) => request<Endpoint, 'GET'>('GET', path, options),
+  ) {
+    return request<Endpoint, 'GET'>('GET', path, options);
+  },
 
-  post: <Endpoint extends EndpointFor<'POST'>>(
+  post<Endpoint extends EndpointFor<'POST'>>(
     path: Endpoint['path'],
     options?: RequestOptions<EndpointBody<Endpoint>>,
-  ) => request<Endpoint, 'POST'>('POST', path, options),
+  ) {
+    return request<Endpoint, 'POST'>('POST', path, options);
+  },
 
-  put: <Endpoint extends EndpointFor<'PUT'>>(
+  put<Endpoint extends EndpointFor<'PUT'>>(
     path: Endpoint['path'],
     options?: RequestOptions<EndpointBody<Endpoint>>,
-  ) => request<Endpoint, 'PUT'>('PUT', path, options),
+  ) {
+    return request<Endpoint, 'PUT'>('PUT', path, options);
+  },
 
-  patch: <Endpoint extends EndpointFor<'PATCH'>>(
+  patch<Endpoint extends EndpointFor<'PATCH'>>(
     path: Endpoint['path'],
     options?: RequestOptions<EndpointBody<Endpoint>>,
-  ) => request<Endpoint, 'PATCH'>('PATCH', path, options),
+  ) {
+    return request<Endpoint, 'PATCH'>('PATCH', path, options);
+  },
 
-  delete: <Endpoint extends EndpointFor<'DELETE'>>(
+  delete<Endpoint extends EndpointFor<'DELETE'>>(
     path: Endpoint['path'],
     options?: RequestOptions<EndpointBody<Endpoint>>,
-  ) => request<Endpoint, 'DELETE'>('DELETE', path, options),
+  ) {
+    return request<Endpoint, 'DELETE'>('DELETE', path, options);
+  },
 };

@@ -16,7 +16,7 @@ export type ApiError = {
   message: string;
 };
 
-export const isApiError = (value: unknown): value is ApiError => {
+export function isApiError(value: unknown): value is ApiError {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -25,4 +25,13 @@ export const isApiError = (value: unknown): value is ApiError => {
     'message' in value &&
     typeof value.message === 'string'
   );
-};
+}
+
+export function isAbortError(value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'name' in value &&
+    value.name === 'AbortError'
+  );
+}

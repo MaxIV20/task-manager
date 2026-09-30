@@ -5,3 +5,4 @@ export type {
   QueryParamValue,
   RequestOptions,
 } from './api-client';
+export { Key, queryClient } from './vue-query';

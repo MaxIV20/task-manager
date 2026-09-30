@@ -1,2 +1,15 @@
 $tablet: 768px;
 $desktop: 1280px;
+
+:root {
+  --app-canvas: #f7f8fa;
+  --app-header: #172b4d;
+  --app-header-text: #ffffff;
+  --app-text: #172b4d;
+  --app-muted: #5e6c84;
+  --app-border: #dfe1e6;
+  --app-surface: #ffffff;
+  --app-column: #ebecf0;
+  --app-link: #0052cc;
+  --app-danger: #b42318;
+}

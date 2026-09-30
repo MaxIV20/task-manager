@@ -13,10 +13,11 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.104.0",
     "@vee-validate/yup": "4.15.1",
     "@vueuse/core": "14.4.0",
     "element-plus": "2.14.6",
-    "pinia": "4.0.3",
+    "pinia": "^4.0.3",
     "vee-validate": "4.15.1",
     "vue": "3.5.43",
     "vue-router": "5.3.1"
@@ -29,6 +30,7 @@
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.1",
     "eslint-plugin-vue": "10.10.0",
+    "globals": "^17.12.0",
     "prettier": "3.9.6",
     "sass": "1.103.1",
     "typescript": "6.0.3",

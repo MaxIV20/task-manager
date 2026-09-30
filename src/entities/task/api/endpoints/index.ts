@@ -1,0 +1,9 @@
+export { cloneTask, name as cloneTaskName } from './clone-task';
+export { createComment, name as createCommentName } from './create-comment';
+export { createTask, name as createTaskName } from './create-task';
+export { getTask, name as getTaskName } from './get-task';
+export { getTasks, name as getTasksName } from './get-tasks';
+export { removeComment, name as removeCommentName } from './remove-comment';
+export { removeTask, name as removeTaskName } from './remove-task';
+export { updateComment, name as updateCommentName } from './update-comment';
+export { updateTask, name as updateTaskName } from './update-task';
