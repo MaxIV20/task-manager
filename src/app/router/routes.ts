@@ -1,27 +1,23 @@
 import type { RouteRecordRaw } from 'vue-router';
 
-import { useTasksStore } from '@/entities/task';
+import { ensureTaskExists } from '@/entities/task';
+import { ROUTE_NAMES } from '@/shared/config';
 
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/tasks',
+    redirect: { name: ROUTE_NAMES.TASK_LIST },
   },
   {
     path: '/tasks',
-    name: 'task-list',
+    name: ROUTE_NAMES.TASK_LIST,
     component: () =>
       import('@/pages/task-list').then(({ TaskListPage }) => TaskListPage),
   },
   {
     path: '/tasks/:id',
-    name: 'task-details',
-    beforeEnter: async (to) => {
-      const tasksStore = useTasksStore();
-      const exists = await tasksStore.checkTaskExists(String(to.params.id));
-
-      return exists ? true : { path: '/tasks', replace: true };
-    },
+    name: ROUTE_NAMES.TASK_DETAILS,
+    beforeEnter: ensureTaskExists,
     component: () =>
       import('@/pages/task-details').then(
         ({ TaskDetailsPage }) => TaskDetailsPage,

@@ -13,7 +13,7 @@ import {
 
 const filtersSchema = object({
   title: string()
-    .transform((value: string) => value.trim())
+    .trim()
     .test(
       'title-length',
       'Введите от 3 до 200 символов',
@@ -47,19 +47,11 @@ function emptyFilters(): TaskFilters {
   return { status: [], priority: [] };
 }
 
-function copyValues<T>(values: T[] | T | undefined): T[] {
-  if (Array.isArray(values)) {
-    return [...values];
-  }
-
-  return values ? [values] : [];
-}
-
 function copyFilters(filters: TaskFilters): TaskFilters {
   return {
     title: filters.title,
-    status: copyValues(filters.status),
-    priority: copyValues(filters.priority),
+    status: [...(filters.status ?? [])],
+    priority: [...(filters.priority ?? [])],
   };
 }
 

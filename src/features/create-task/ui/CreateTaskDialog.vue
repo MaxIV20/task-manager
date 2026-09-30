@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router';
 
 import { TASK_PRIORITY_OPTIONS } from '@/entities/task';
+import { ROUTE_NAMES } from '@/shared/config';
 
 import { useCreateTask } from '../model';
 
@@ -20,7 +21,7 @@ const {
   isDisabled,
   isMutating,
 } = useCreateTask((id) => {
-  router.push(`/tasks/${id}`);
+  router.push({ name: ROUTE_NAMES.TASK_DETAILS, params: { id } });
 });
 </script>
 
@@ -34,7 +35,6 @@ const {
     destroy-on-close
     title="Создать задачу"
     width="min(560px, calc(100% - 32px))"
-    @closed="close"
   >
     <el-form label-position="top" @submit.prevent="submit">
       <el-form-item :error="errors.title" label="Название" required>

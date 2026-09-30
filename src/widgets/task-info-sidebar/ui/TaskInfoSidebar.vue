@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 import {
   TASK_PRIORITY_LABELS,
@@ -8,13 +10,6 @@ import {
 } from '@/entities/task';
 
 const { task } = storeToRefs(useTaskStore());
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat('ru-RU', {
-    dateStyle: 'long',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
 </script>
 
 <template>
@@ -35,7 +30,11 @@ function formatDate(value: string): string {
       </div>
       <div>
         <dt>Создана</dt>
-        <dd>{{ formatDate(task.createdAt) }}</dd>
+        <dd>
+          {{
+            format(parseISO(task.createdAt), "PPP 'в' HH:mm", { locale: ru })
+          }}
+        </dd>
       </div>
     </dl>
   </aside>

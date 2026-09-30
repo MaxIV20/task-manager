@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { onBeforeRouteUpdate } from 'vue-router';
 
-import { useTaskStore } from '@/entities/task';
+import { ensureTaskExists, useTaskStore } from '@/entities/task';
 import { TaskComments } from '@/widgets/task-comments';
 import { TaskContent } from '@/widgets/task-content';
 import { TaskInfoSidebar } from '@/widgets/task-info-sidebar';
@@ -9,6 +10,8 @@ import { TaskInfoSidebar } from '@/widgets/task-info-sidebar';
 const taskStore = useTaskStore();
 const { task, error, isPending } = storeToRefs(taskStore);
 const { refetch } = taskStore;
+
+onBeforeRouteUpdate(ensureTaskExists);
 </script>
 
 <template>

@@ -1,3 +1,4 @@
 export enum ROUTE_NAMES {
-  HOME = 'home',
+  TASK_LIST = 'task-list',
+  TASK_DETAILS = 'task-details',
 }

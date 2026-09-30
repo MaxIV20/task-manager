@@ -7,6 +7,7 @@ import {
   useRemoveTaskMutation,
   useTaskStore,
 } from '@/entities/task';
+import { ROUTE_NAMES } from '@/shared/config';
 
 export function useTaskActions() {
   const router = useRouter();
@@ -19,14 +20,15 @@ export function useTaskActions() {
 
   async function cloneTask() {
     const task = taskStore.task;
-    if (!task) {
-      return;
-    }
+    if (!task) return;
 
     try {
       const copy = await cloneTaskMutation(task.id);
       ElNotification.success({ title: 'Задача клонирована' });
-      await router.push(`/tasks/${copy.id}`);
+      await router.push({
+        name: ROUTE_NAMES.TASK_DETAILS,
+        params: { id: copy.id },
+      });
     } catch (error: unknown) {
       ElNotification.error({
         title: 'Не удалось клонировать задачу',
@@ -58,7 +60,7 @@ export function useTaskActions() {
     try {
       await removeTaskMutation(task.id);
       ElNotification.success({ title: 'Задача удалена' });
-      await router.push('/tasks');
+      await router.push({ name: ROUTE_NAMES.TASK_LIST });
     } catch (error: unknown) {
       ElNotification.error({
         title: 'Не удалось удалить задачу',

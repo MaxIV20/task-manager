@@ -1,21 +1,22 @@
 <script setup lang="ts">
+import { format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
+
 import {
   TASK_PRIORITY_LABELS,
   TASK_STATUS_LABELS,
   type Task,
 } from '@/entities/task';
+import { ROUTE_NAMES } from '@/shared/config';
 
 defineProps<{ task: Task }>();
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat('ru-RU', { dateStyle: 'medium' }).format(
-    new Date(value),
-  );
-}
 </script>
 
 <template>
-  <RouterLink :class="$style.taskCard" :to="`/tasks/${task.id}`">
+  <RouterLink
+    :class="$style.taskCard"
+    :to="{ name: ROUTE_NAMES.TASK_DETAILS, params: { id: task.id } }"
+  >
     <strong :class="$style.taskCardTitle">{{ task.title }}</strong>
     <span :class="$style.taskCardMeta">
       {{ TASK_STATUS_LABELS[task.status] }}
@@ -25,7 +26,7 @@ function formatDate(value: string): string {
     </span>
     <span :class="$style.taskCardMeta">{{ task.assignee }}</span>
     <span :class="$style.taskCardMeta">
-      Создана: {{ formatDate(task.createdAt) }}
+      Создана: {{ format(parseISO(task.createdAt), 'PP', { locale: ru }) }}
     </span>
   </RouterLink>
 </template>

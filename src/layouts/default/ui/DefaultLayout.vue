@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { CreateTaskDialog } from '@/features/create-task';
+import { ROUTE_NAMES } from '@/shared/config';
 </script>
 
 <template>
   <div :class="$style.appShell">
     <header :class="$style.appHeader">
-      <RouterLink :class="$style.appBrand" to="/tasks">Taskflow</RouterLink>
+      <RouterLink
+        :class="$style.appBrand"
+        :to="{ name: ROUTE_NAMES.TASK_LIST }"
+      >
+        Taskflow
+      </RouterLink>
       <div :class="$style.appHeaderActions"><CreateTaskDialog /></div>
     </header>
     <main :class="$style.appMain"><slot /></main>

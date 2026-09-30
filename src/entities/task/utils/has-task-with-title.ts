@@ -1,14 +1,9 @@
 import type { Task } from '../model';
 
-export function hasTaskWithTitle(
-  tasks: Task[],
-  title: string,
-  excludedId?: string,
-) {
+export function hasTaskWithTitle(tasks: Task[], title: string) {
+  const normalizedTitle = title.trim().toLocaleLowerCase();
+
   return tasks.some(
-    (task) =>
-      task.id !== excludedId &&
-      task.title.trim().toLocaleLowerCase() ===
-        title.trim().toLocaleLowerCase(),
+    (task) => task.title.trim().toLocaleLowerCase() === normalizedTitle,
   );
 }

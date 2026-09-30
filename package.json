@@ -16,6 +16,7 @@
     "@tanstack/vue-query": "^5.104.0",
     "@vee-validate/yup": "4.15.1",
     "@vueuse/core": "14.4.0",
+    "date-fns": "4.4.0",
     "element-plus": "2.14.6",
     "pinia": "^4.0.3",
     "vee-validate": "4.15.1",

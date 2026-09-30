@@ -4,13 +4,17 @@ import { storeToRefs } from 'pinia';
 import { useTaskStore } from '@/entities/task';
 import { EditTaskDialog } from '@/features/edit-task';
 import { TaskActions } from '@/features/task-actions';
+import { ROUTE_NAMES } from '@/shared/config';
 
 const { task } = storeToRefs(useTaskStore());
 </script>
 
 <template>
   <section v-if="task" :class="$style.taskContent">
-    <RouterLink :class="$style.taskContentBack" to="/tasks">
+    <RouterLink
+      :class="$style.taskContentBack"
+      :to="{ name: ROUTE_NAMES.TASK_LIST }"
+    >
       ← Назад к задачам
     </RouterLink>
     <div :class="$style.taskContentHeading">

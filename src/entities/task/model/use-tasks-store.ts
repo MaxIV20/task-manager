@@ -3,6 +3,8 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter, type LocationQuery } from 'vue-router';
 
+import { ROUTE_NAMES } from '@/shared/config';
+
 import {
   getTasksQueryOptions,
   useTasksQuery,
@@ -67,7 +69,7 @@ export const useTasksStore = defineStore('tasks', () => {
   watch(
     () => route.query,
     (query) => {
-      if (route.name !== 'task-list') return;
+      if (route.name !== ROUTE_NAMES.TASK_LIST) return;
 
       const nextFilters = getCurrentFilters(query);
 
@@ -90,17 +92,13 @@ export const useTasksStore = defineStore('tasks', () => {
     router.push({ query });
   }
 
-  async function checkTaskExists(id: string) {
-    try {
+  async function ensureTasksLoaded() {
+    if (tasks.value === undefined) {
       await queryClient.query({
         ...getTasksQueryOptions(),
         staleTime: 'static',
       });
-    } catch {
-      return false;
     }
-
-    return tasks.value?.some((task) => task.id === id) ?? false;
   }
 
   return {
@@ -112,6 +110,6 @@ export const useTasksStore = defineStore('tasks', () => {
     isFetching,
     refetch,
     setFilters,
-    checkTaskExists,
+    ensureTasksLoaded,
   };
 });

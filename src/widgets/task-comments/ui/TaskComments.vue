@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { storeToRefs } from 'pinia';
+import { compareAsc, format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 import { useTaskStore, type TaskComment } from '@/entities/task';
 import { CommentForm, useComments } from '@/features/manage-comments';
@@ -13,18 +15,13 @@ const { commentText, createComment, editComment, removeComment, isMutating } =
 
 const comments = computed(() =>
   [...(task.value?.comments ?? [])].sort((left, right) => {
-    const difference =
-      new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime();
+    const difference = compareAsc(
+      parseISO(left.createdAt),
+      parseISO(right.createdAt),
+    );
     return sortOrder.value === 'asc' ? difference : -difference;
   }),
 );
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat('ru-RU', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
 
 async function addComment(text: string) {
   if (task.value) {
@@ -82,7 +79,7 @@ async function promptEdit(comment: TaskComment) {
       <p>{{ comment.text }}</p>
       <footer>
         <time :datetime="comment.createdAt">
-          {{ formatDate(comment.createdAt) }}
+          {{ format(parseISO(comment.createdAt), 'PP, HH:mm', { locale: ru }) }}
         </time>
         <div>
           <el-button
