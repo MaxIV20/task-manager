@@ -1,2 +1,2 @@
 export { useComments } from './model';
-export { CommentForm } from './ui';
+export { CommentForm, CommentEditDialog } from './ui';

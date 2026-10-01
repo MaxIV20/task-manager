@@ -31,6 +31,7 @@ onBeforeRouteUpdate(ensureTaskExists);
     <TaskInfoSidebar :class="$style.info" />
     <TaskComments :class="$style.comment" />
   </div>
+  <el-empty v-else description="Задача не найдена" />
 </template>
 
 <style module lang="scss">

@@ -1,57 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { ElMessageBox } from 'element-plus';
-import { storeToRefs } from 'pinia';
-import { compareAsc, format, parseISO } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { CommentEditDialog, CommentForm } from '@/features/manage-comments';
 
-import { useTaskStore, type TaskComment } from '@/entities/task';
-import { CommentForm, useComments } from '@/features/manage-comments';
+import { useTaskCommentsViewModel } from '../model';
+import TaskComment from './TaskComment.vue';
 
-const { task } = storeToRefs(useTaskStore());
-const sortOrder = ref<'asc' | 'desc'>('desc');
-const { commentText, createComment, editComment, removeComment, isMutating } =
-  useComments();
-
-const comments = computed(() =>
-  [...(task.value?.comments ?? [])].sort((left, right) => {
-    const difference = compareAsc(
-      parseISO(left.createdAt),
-      parseISO(right.createdAt),
-    );
-    return sortOrder.value === 'asc' ? difference : -difference;
-  }),
-);
-
-async function addComment(text: string) {
-  if (task.value) {
-    await createComment(task.value.id, text);
-  }
-}
-
-async function promptEdit(comment: TaskComment) {
-  const currentTask = task.value;
-  if (!currentTask) {
-    return;
-  }
-
-  try {
-    const { value } = await ElMessageBox.prompt(
-      'Текст комментария',
-      'Редактировать комментарий',
-      {
-        inputValue: comment.text,
-        inputPattern: /\S+/,
-        inputErrorMessage: 'Введите текст комментария',
-        confirmButtonText: 'Сохранить',
-        cancelButtonText: 'Отмена',
-      },
-    );
-    await editComment(currentTask.id, comment.id, value.trim());
-  } catch {
-    // Cancel keeps the existing comment unchanged.
-  }
-}
+const {
+  task,
+  sortOrder,
+  comments,
+  commentText,
+  isMutating,
+  isEditOpen,
+  editText,
+  editErrors,
+  isEditSubmitting,
+  formatDate,
+  addComment,
+  openEdit,
+  closeEdit,
+  submitEdit,
+  removeComment,
+} = useTaskCommentsViewModel();
 </script>
 
 <template>
@@ -71,36 +40,23 @@ async function promptEdit(comment: TaskComment) {
     <p v-if="!comments.length" :class="$style.taskCommentsEmpty">
       Комментариев пока нет.
     </p>
-    <article
+    <TaskComment
       v-for="comment in comments"
       :key="comment.id"
-      :class="$style.taskComment"
-    >
-      <p>{{ comment.text }}</p>
-      <footer>
-        <time :datetime="comment.createdAt">
-          {{ format(parseISO(comment.createdAt), 'PP, HH:mm', { locale: ru }) }}
-        </time>
-        <div>
-          <el-button
-            :disabled="isMutating"
-            link
-            type="primary"
-            @click="promptEdit(comment)"
-          >
-            Изменить
-          </el-button>
-          <el-button
-            :disabled="isMutating"
-            link
-            type="danger"
-            @click="removeComment(task.id, comment.id)"
-          >
-            Удалить
-          </el-button>
-        </div>
-      </footer>
-    </article>
+      :comment="comment"
+      :formatted-date="formatDate(comment.createdAt)"
+      :is-loading="isMutating"
+      @edit="openEdit"
+      @remove="removeComment"
+    />
+    <CommentEditDialog
+      v-model="isEditOpen"
+      v-model:text="editText"
+      :error="editErrors.text"
+      :is-loading="isEditSubmitting"
+      @cancel="closeEdit"
+      @submit="submitEdit"
+    />
   </section>
 </template>
 
@@ -117,24 +73,6 @@ async function promptEdit(comment: TaskComment) {
     font-size: 20px;
     margin: 0;
   }
-
-  .taskComment {
-    p {
-      line-height: 1.5;
-      margin: 0 0 10px;
-      white-space: pre-wrap;
-    }
-  }
-
-  footer {
-    align-items: center;
-    color: var(--app-muted);
-    display: flex;
-    flex-wrap: wrap;
-    font-size: 13px;
-    gap: 8px;
-    justify-content: space-between;
-  }
 }
 
 .taskCommentsHeading {
@@ -149,11 +87,5 @@ async function promptEdit(comment: TaskComment) {
 .taskCommentsEmpty {
   color: var(--app-muted);
   margin: 20px 0 0;
-}
-
-.taskComment {
-  border-top: 1px solid var(--app-border);
-  margin-top: 18px;
-  padding-top: 14px;
 }
 </style>

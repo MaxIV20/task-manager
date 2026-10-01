@@ -13,31 +13,34 @@ const { task } = storeToRefs(useTaskStore());
 </script>
 
 <template>
-  <aside v-if="task" :class="$style.taskInfo">
-    <h2>Информация</h2>
-    <dl>
-      <div>
-        <dt>Статус</dt>
-        <dd>{{ TASK_STATUS_LABELS[task.status] }}</dd>
-      </div>
-      <div>
-        <dt>Приоритет</dt>
-        <dd>{{ TASK_PRIORITY_LABELS[task.priority] }}</dd>
-      </div>
-      <div>
-        <dt>Исполнитель</dt>
-        <dd>{{ task.assignee || 'Не назначен' }}</dd>
-      </div>
-      <div>
-        <dt>Создана</dt>
-        <dd>
-          {{
-            format(parseISO(task.createdAt), "PPP 'в' HH:mm", { locale: ru })
-          }}
-        </dd>
-      </div>
-    </dl>
-  </aside>
+  <div>
+    <aside v-if="task" :class="$style.taskInfo">
+      <h2>Информация</h2>
+      <dl>
+        <div>
+          <dt>Статус</dt>
+          <dd>{{ TASK_STATUS_LABELS[task.status] }}</dd>
+        </div>
+        <div>
+          <dt>Приоритет</dt>
+          <dd>{{ TASK_PRIORITY_LABELS[task.priority] }}</dd>
+        </div>
+        <div>
+          <dt>Исполнитель</dt>
+          <dd>{{ task.assignee || 'Не назначен' }}</dd>
+        </div>
+        <div>
+          <dt>Создана</dt>
+          <dd>
+            {{
+              format(parseISO(task.createdAt), "PPP 'в' HH:mm", { locale: ru })
+            }}
+          </dd>
+        </div>
+      </dl>
+    </aside>
+    <el-empty v-else description="Задача не найдена" />
+  </div>
 </template>
 
 <style module lang="scss">

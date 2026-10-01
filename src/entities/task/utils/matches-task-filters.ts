@@ -5,12 +5,15 @@ export function matchesTaskFilters(task: Task, filters?: TaskFilters) {
     return true;
   }
 
-  return (
-    (!filters.title ||
-      task.title
-        .toLocaleLowerCase()
-        .includes(filters.title.trim().toLocaleLowerCase())) &&
-    (!filters.status?.length || filters.status.includes(task.status)) &&
-    (!filters.priority?.length || filters.priority.includes(task.priority))
-  );
+  const matchedTitle =
+    !filters.title ||
+    task.title
+      .toLocaleLowerCase()
+      .includes(filters.title.trim().toLocaleLowerCase());
+  const matchedStatus =
+    !filters.status?.length || filters.status.includes(task.status);
+  const matchedPriority =
+    !filters.priority?.length || filters.priority.includes(task.priority);
+
+  return matchedTitle && matchedStatus && matchedPriority;
 }

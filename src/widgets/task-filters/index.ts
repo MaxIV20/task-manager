@@ -1,1 +1,1 @@
-export { TaskFiltersWidget } from './ui';
+export { TaskFilters } from './ui';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TaskFilterForm } from '@/features/apply-task-filters';
+import { TaskFilterForm } from '@/features/task-filters';
 </script>
 
 <template>

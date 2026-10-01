@@ -1,1 +1,1 @@
-export { default as TaskFiltersWidget } from './TaskFiltersWidget.vue';
+export { default as TaskFilters } from './TaskFilters.vue';

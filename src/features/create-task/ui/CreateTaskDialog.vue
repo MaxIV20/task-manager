@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 
 import { TASK_PRIORITY_OPTIONS } from '@/entities/task';
-import { ROUTE_NAMES } from '@/shared/config';
+import { DIALOG_WIDTH, ROUTE_NAMES } from '@/shared/config';
 
 import { useCreateTask } from '../model';
 
@@ -32,9 +32,9 @@ const {
   <el-dialog
     v-model="isOpen"
     :before-close="beforeClose"
+    :width="DIALOG_WIDTH"
     destroy-on-close
     title="Создать задачу"
-    width="min(560px, calc(100% - 32px))"
   >
     <el-form label-position="top" @submit.prevent="submit">
       <el-form-item :error="errors.title" label="Название" required>

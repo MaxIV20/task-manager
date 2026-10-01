@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from '@/entities/task';
+import { DIALOG_WIDTH } from '@/shared/config';
 
 import { useEditTask } from '../model';
 
@@ -23,8 +24,8 @@ const {
   <el-dialog
     v-model="isOpen"
     :before-close="beforeClose"
+    :width="DIALOG_WIDTH"
     title="Редактировать задачу"
-    width="min(560px, calc(100% - 32px))"
   >
     <el-form label-position="top" @submit.prevent="submit">
       <el-form-item :error="errors.title" label="Название" required>

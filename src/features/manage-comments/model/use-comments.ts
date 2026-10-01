@@ -53,8 +53,8 @@ export function useComments() {
     }
   }
 
-  async function editComment(taskId: string, commentId: string, text: string) {
-    await runMutation(
+  function editComment(taskId: string, commentId: string, text: string) {
+    return runMutation(
       () => updateCommentMutation({ taskId, commentId, values: { text } }),
       'Комментарий обновлён',
     );
