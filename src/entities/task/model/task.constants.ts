@@ -5,6 +5,9 @@ import type {
   TaskStatusOption,
 } from './task.types';
 
+export const TASK_STATUSES: TaskStatus[] = ['todo', 'in_progress', 'done'];
+export const TASK_PRIORITIES: TaskPriority[] = ['low', 'medium', 'high'];
+
 export const TASK_STATUS_OPTIONS: TaskStatusOption[] = [
   { value: 'todo', label: 'TODO' },
   { value: 'in_progress', label: 'In progress' },

@@ -6,10 +6,10 @@ import type {
   TaskUpdateValues,
 } from '../../model';
 
-const READ_DELAY = 2000;
+const READ_DELAY = 200;
 const MUTATION_DELAY = 300;
 
-let tasks: TaskFull[] = [
+const tasks: TaskFull[] = [
   {
     id: '550e8400-e29b-41d4-a716-446655440000',
     title: 'Подготовить дизайн-систему',
@@ -52,14 +52,26 @@ let tasks: TaskFull[] = [
 ];
 
 function clone(task: TaskFull): TaskFull {
-  return {
-    ...task,
-    comments: task.comments.map((comment) => ({ ...comment })),
-  };
+  return structuredClone(task);
 }
 
-function toPreview(task: TaskFull): Task {
-  return {
+function delay(milliseconds: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+function getTaskIndex(id: string) {
+  const index = tasks.findIndex((task) => task.id === id);
+  if (index === -1) {
+    throw new Error('Task not found');
+  }
+  return index;
+}
+
+export async function getTasks(): Promise<Task[]> {
+  await delay(READ_DELAY);
+  return tasks.map((task) => ({
     id: task.id,
     title: task.title,
     description: task.description,
@@ -67,24 +79,7 @@ function toPreview(task: TaskFull): Task {
     assignee: task.assignee,
     priority: task.priority,
     createdAt: task.createdAt,
-  };
-}
-
-function delay(milliseconds: number) {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, milliseconds);
-  });
-}
-
-function getTaskIndex(id: string) {
-  const index = tasks.findIndex((task) => task.id === id);
-  if (index === -1) throw new Error('Task not found');
-  return index;
-}
-
-export async function getTasks() {
-  await delay(READ_DELAY);
-  return tasks.map(toPreview);
+  }));
 }
 
 export async function getTask(id: string) {
@@ -103,7 +98,7 @@ export async function createTask(values: TaskCreateValues) {
     createdAt: new Date().toISOString(),
     comments: [],
   };
-  tasks = [...tasks, task];
+  tasks.push(task);
   return clone(task);
 }
 
@@ -113,16 +108,15 @@ export async function updateTask(id: string, values: TaskUpdateValues) {
   const task: TaskFull = {
     ...tasks[index],
     ...values,
-    description: values.description || undefined,
   };
-  tasks.splice(index, 1, task);
+  tasks[index] = task;
   return clone(task);
 }
 
 export async function cloneTask(id: string) {
   await delay(MUTATION_DELAY);
   const task = { ...clone(tasks[getTaskIndex(id)]), id: crypto.randomUUID() };
-  tasks = [...tasks, task];
+  tasks.push(task);
   return clone(task);
 }
 
@@ -137,7 +131,7 @@ function updateComments(
 ) {
   const index = getTaskIndex(taskId);
   const task = { ...tasks[index], comments: callback(tasks[index].comments) };
-  tasks.splice(index, 1, task);
+  tasks[index] = task;
   return clone(task);
 }
 
@@ -160,8 +154,9 @@ export async function updateComment(
 ) {
   await delay(MUTATION_DELAY);
   return updateComments(taskId, (comments) => {
-    if (!comments.some((comment) => comment.id === commentId))
+    if (!comments.some((comment) => comment.id === commentId)) {
       throw new Error('Comment not found');
+    }
     return comments.map((comment) =>
       comment.id === commentId ? { ...comment, text: values.text } : comment,
     );
@@ -171,8 +166,9 @@ export async function updateComment(
 export async function removeComment(taskId: string, commentId: string) {
   await delay(MUTATION_DELAY);
   return updateComments(taskId, (comments) => {
-    if (!comments.some((comment) => comment.id === commentId))
+    if (!comments.some((comment) => comment.id === commentId)) {
       throw new Error('Comment not found');
+    }
     return comments.filter((comment) => comment.id !== commentId);
   });
 }

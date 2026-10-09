@@ -1,47 +1,67 @@
 import { defineStore } from 'pinia';
 import { useQueryClient } from '@tanstack/vue-query';
-import { computed, ref, watch } from 'vue';
-import { useRoute, useRouter, type LocationQuery } from 'vue-router';
-
-import { ROUTE_NAMES } from '@/shared/config';
+import { computed, ref } from 'vue';
+import {
+  useRoute,
+  useRouter,
+  type LocationQuery,
+  RouteLocationNormalized,
+} from 'vue-router';
 
 import {
   getTasksQueryOptions,
   useTasksQuery,
 } from '../api/vue-query/use-tasks-query';
 import { matchesTaskFilters } from '../utils';
-import type { TaskFilters } from './task.types';
+import type { TaskFilters, TaskStatus, TaskPriority } from './task.types';
+import { TASK_STATUSES, TASK_PRIORITIES } from './task.constants';
+
+function getFilterValueFromQuery(
+  filter: LocationQuery[string],
+): string | undefined {
+  return (Array.isArray(filter) ? filter[0] : filter) ?? undefined;
+}
+
+function getFilterStringValue(
+  filter: TaskFilters[keyof TaskFilters],
+): string | undefined {
+  return Array.isArray(filter) ? filter.join(',') : filter;
+}
 
 function getCurrentFilters(query: LocationQuery): TaskFilters {
-  const title = Array.isArray(query.title) ? query.title[0] : query.title;
-  const status = Array.isArray(query.status)
-    ? query.status.join(',')
-    : query.status;
-  const priority = Array.isArray(query.priority)
-    ? query.priority.join(',')
-    : query.priority;
+  const title = getFilterValueFromQuery(query.title);
+  const status = getFilterValueFromQuery(query.status);
+  const priority = getFilterValueFromQuery(query.priority);
 
   return {
-    title: title || undefined,
-    status: status?.split(',').filter(Boolean) as TaskFilters['status'],
-    priority: priority?.split(',').filter(Boolean) as TaskFilters['priority'],
+    title,
+    status: status
+      ?.split(',')
+      .filter((i) =>
+        TASK_STATUSES.includes(i as TaskStatus),
+      ) as TaskFilters['status'],
+    priority: priority
+      ?.split(',')
+      .filter((i) =>
+        TASK_PRIORITIES.includes(i as TaskPriority),
+      ) as TaskFilters['priority'],
   };
 }
 
-function sameFilters(left: TaskFilters, right: TaskFilters) {
-  const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+function sameFilters(left: TaskFilters, right: TaskFilters): boolean {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+
+  if (leftKeys.length !== rightKeys.length) {
+    return false;
+  }
+
+  const keys = new Set([...leftKeys, ...rightKeys] as (keyof TaskFilters)[]);
 
   return [...keys].every((key) => {
-    const leftValue = left[key as keyof TaskFilters];
-    const rightValue = right[key as keyof TaskFilters];
-    const leftQueryValue = Array.isArray(leftValue)
-      ? leftValue.join(',')
-      : leftValue;
-    const rightQueryValue = Array.isArray(rightValue)
-      ? rightValue.join(',')
-      : rightValue;
-
-    return (leftQueryValue || undefined) === (rightQueryValue || undefined);
+    const leftQueryValue = getFilterStringValue(left[key]);
+    const rightQueryValue = getFilterStringValue(right[key]);
+    return leftQueryValue === rightQueryValue;
   });
 }
 
@@ -57,30 +77,22 @@ export const useTasksStore = defineStore('tasks', () => {
     isFetching,
     refetch,
   } = useTasksQuery();
-  // Удобнее фильтровать на фронте, а не на бэке, т.к. при создании задачи нужен список всех задач.
-  // Иначе при создании таски пришлось бы делать запрос для проверки title, что с ответом в 2сек было бы слишком долго
-  // (но в случае нормального бэка да, можно было бы получать список отфильтрованных тасок и при создании проверять наличие таски с title отправкой запроса)
   const filteredTasks = computed(() =>
     (tasks.value ?? []).filter((task) =>
       matchesTaskFilters(task, filters.value),
     ),
   );
 
-  watch(
-    () => route.query,
-    (query) => {
-      if (route.name !== ROUTE_NAMES.TASK_LIST) return;
+  function syncQueryFilters(to: RouteLocationNormalized) {
+    const nextFilters = getCurrentFilters(to.query);
 
-      const nextFilters = getCurrentFilters(query);
-
-      if (!sameFilters(filters.value, nextFilters)) {
-        filters.value = nextFilters;
-      }
-    },
-  );
+    if (!sameFilters(filters.value, nextFilters)) {
+      filters.value = nextFilters;
+    }
+  }
 
   function setFilters(nextFilters: TaskFilters) {
-    filters.value = { ...nextFilters };
+    filters.value = structuredClone(nextFilters);
     const query = Object.fromEntries(
       Object.entries(filters.value).map(([key, initialValue]) => {
         const value = Array.isArray(initialValue)
@@ -111,5 +123,6 @@ export const useTasksStore = defineStore('tasks', () => {
     refetch,
     setFilters,
     ensureTasksLoaded,
+    syncQueryFilters,
   };
 });

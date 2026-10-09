@@ -8,7 +8,7 @@ import '@/assets/styles/main.scss';
 import { initializeRouter } from '@/app/router';
 import { queryClient } from '@/utils/api';
 
-function init() {
+async function init() {
   const app = createApp(App);
   const router = initializeRouter();
 
@@ -16,6 +16,7 @@ function init() {
   app.use(createPinia());
   app.use(router);
   app.use(ElementPlus);
+  await router.isReady();
   app.mount('#app');
 }
 

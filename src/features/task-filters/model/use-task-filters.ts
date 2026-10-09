@@ -1,7 +1,7 @@
 import { toTypedSchema } from '@vee-validate/yup';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
-import { watch } from 'vue';
+import { watch, onBeforeUnmount } from 'vue';
 import { array, object, string } from 'yup';
 
 import {
@@ -85,6 +85,8 @@ export function useTaskFilters() {
     resetForm({ values: empty }, { force: true });
     tasksStore.setFilters(empty);
   }
+
+  onBeforeUnmount(reset);
 
   return { title, status, priority, errors, isLoading, apply, reset };
 }
